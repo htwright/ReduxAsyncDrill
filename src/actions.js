@@ -5,23 +5,35 @@ import {search} from './spotify';
 
 export const SEARCH_ARTISTS_REQUEST = 'SEARCH_ARTISTS_REQUEST';
 export const searchArtistsRequest = () => ({
-    type: SEARCH_ARTISTS_REQUEST
+  type: SEARCH_ARTISTS_REQUEST
 });
 
 export const SEARCH_ARTISTS_SUCCESS = 'SEARCH_ARTISTS_SUCCESS';
 export const searchArtistsSuccess = artists => ({
-    type: SEARCH_ARTISTS_SUCCESS,
-    artists
+  type: SEARCH_ARTISTS_SUCCESS,
+  artists
 });
 
 export const SEARCH_ARTISTS_ERROR = 'SEARCH_ARTISTS_ERROR';
 export const searchArtistsError = error => ({
-    type: SEARCH_ARTISTS_ERROR,
-    error
+  type: SEARCH_ARTISTS_ERROR,
+  error
 });
 
 export const searchArtists = artist => dispatch => {
+  dispatch(searchArtistsRequest());
+  return search(artist)
+  .then(res=>{
+    console.log(res);
+    if (res.length < 1){
+      throw new Error('no data returned!');
+    }
+    return res;
+  }).then(data => {
+    return dispatch(searchArtistsSuccess(data));
+  }).catch(err => dispatch(searchArtistsError(err))
+  );
     // Make this async action using the search function
     // It should dispatch the three sync actions above
-};
 
+};
